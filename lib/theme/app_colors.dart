@@ -14,4 +14,6 @@ class AppColors {
 
   // Border color of the text fields.
   static const Color fieldBorder = Color(0xFF3A3A40);
+  // Secondary text (hints, subtitles).
+static const Color textMuted = Color(0xFFB0B0B8);
 }

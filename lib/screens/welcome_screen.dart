@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:focusbank/theme/app_colors.dart';
 import 'package:focusbank/widgets/primary_button.dart';
+import 'package:focusbank/screens/login_screen.dart';
 
 /// First screen: presents the app and leads to the login.
 class WelcomeScreen extends StatelessWidget {
@@ -85,7 +86,13 @@ class WelcomeScreen extends StatelessWidget {
                     child: PrimaryButton(
                       label: 'Start Now',
                       onPressed: () {
-                        // TODO: go to the Login screen (next step).
+                        // push = put the Login screen on top of the stack.
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => const LoginScreen(),
+                          ),
+                        );
                       },
                     ),
                   ),
