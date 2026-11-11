@@ -5,8 +5,14 @@ import 'package:focusbank/theme/app_colors.dart';
 class AuthHeader extends StatelessWidget {
   final String title;
   final String subtitle;
+  final bool showBack; // show the yellow "<" arrow?
 
-  const AuthHeader({super.key, required this.title, required this.subtitle});
+  const AuthHeader({
+    super.key,
+    required this.title,
+    required this.subtitle,
+    this.showBack = false, // default: no arrow (Login, Sign Up step 1)
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -22,13 +28,32 @@ class AuthHeader extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 16),
-        Text(
-          title,
-          style: const TextStyle(
-            color: AppColors.yellow,
-            fontSize: 22,
-            fontWeight: FontWeight.bold,
-          ),
+        // Stack: the title stays centered, the arrow floats on the left.
+        Stack(
+          alignment: Alignment.center,
+          children: [
+            Text(
+              title,
+              style: const TextStyle(
+                color: AppColors.yellow,
+                fontSize: 22,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            if (showBack) // "if" inside a list: add the widget only if true
+              Align(
+                alignment: Alignment.centerLeft,
+                child: GestureDetector(
+                  // pop = remove this screen, go back to the previous one.
+                  onTap: () => Navigator.pop(context),
+                  child: const Icon(
+                    Icons.arrow_back_ios_new,
+                    color: AppColors.yellow,
+                    size: 20,
+                  ),
+                ),
+              ),
+          ],
         ),
         const SizedBox(height: 8),
         Text(
