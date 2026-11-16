@@ -7,6 +7,7 @@ import 'package:focusbank/widgets/auth_text_field.dart';
 import 'package:focusbank/widgets/primary_button.dart';
 import 'package:focusbank/screens/home_screen.dart';
 import 'package:focusbank/services/auth_service.dart';
+import 'package:focusbank/screens/main_navigation.dart';
 
 /// Step 2 of the sign up: the user's goal.
 class SignUpProfileScreen extends StatefulWidget {
@@ -75,7 +76,7 @@ class _SignUpProfileScreenState extends State<SignUpProfileScreen> {
     // Success: open Home and clear the sign-up screens from the stack.
     Navigator.pushAndRemoveUntil(
       context,
-      MaterialPageRoute(builder: (_) => const HomeScreen()),
+      MaterialPageRoute(builder: (_) => const MainNavigationScreen()),
       (route) => false,
     );
   }

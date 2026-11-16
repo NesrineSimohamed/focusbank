@@ -7,7 +7,7 @@ import 'package:focusbank/utils/validators.dart';
 import 'package:focusbank/widgets/auth_parts.dart';
 import 'package:focusbank/widgets/auth_text_field.dart';
 import 'package:focusbank/widgets/primary_button.dart';
-
+import 'package:focusbank/screens/main_navigation.dart';
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
 
@@ -54,7 +54,7 @@ class _LoginScreenState extends State<LoginScreen> {
     // Success: open Home and clear the previous screens from the stack.
     Navigator.pushAndRemoveUntil(
       context,
-      MaterialPageRoute(builder: (_) => const HomeScreen()),
+      MaterialPageRoute(builder: (_) => const MainNavigationScreen()),
       (route) => false,
     );
   }

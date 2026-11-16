@@ -4,13 +4,13 @@ import 'package:device_preview/presets.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:focusbank/firebase_options.dart';
 import 'package:focusbank/screens/welcome_screen.dart';
+import 'package:focusbank/theme/app_theme.dart';
 
 Future<void> main() async {
-  // Required when you "await" something BEFORE runApp.
   DevicePreview.enable();
   await DevicePreview.controller.applyPreset(DevicePresets.galaxyS25);
 
-  // 2) Only then connect to Firebase (it needs the binding to exist).
+  // Connect to Firebase before the app starts.
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   runApp(const FocusbankApp());
 }
@@ -20,10 +20,13 @@ class FocusbankApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
+    // No "const" before MaterialApp anymore: AppTheme.darkTheme is
+    // computed while the app runs, so it isn't a compile-time constant.
+    return MaterialApp(
       title: 'Focusbank',
       debugShowCheckedModeBanner: false,
-      home: WelcomeScreen(),
+      theme: AppTheme.darkTheme, // her theme: her screens depend on it
+      home: const WelcomeScreen(),
     );
   }
 }
