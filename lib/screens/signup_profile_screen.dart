@@ -5,6 +5,8 @@ import 'package:focusbank/utils/validators.dart';
 import 'package:focusbank/widgets/auth_parts.dart';
 import 'package:focusbank/widgets/auth_text_field.dart';
 import 'package:focusbank/widgets/primary_button.dart';
+import 'package:focusbank/screens/home_screen.dart';
+import 'package:focusbank/services/auth_service.dart';
 
 /// Step 2 of the sign up: the user's goal.
 class SignUpProfileScreen extends StatefulWidget {
@@ -27,7 +29,8 @@ class _SignUpProfileScreenState extends State<SignUpProfileScreen> {
   final _nameController = TextEditingController();
   final _jobController = TextEditingController();
   final _incomeController = TextEditingController();
-
+  final _auth = AuthService();
+  bool _loading = false; // true while we wait for the server
   @override
   void dispose() {
     _nameController.dispose();
@@ -36,14 +39,45 @@ class _SignUpProfileScreenState extends State<SignUpProfileScreen> {
     super.dispose();
   }
 
-  void _onNext() {
-    if (!_formKey.currentState!.validate()) return;
+  Future<void> _onNext() async {
+    // Stop if the form is invalid, or if a request is already running.
+    if (!_formKey.currentState!.validate() || _loading) return;
 
-    // TODO (backend step): send everything to create the account.
-    debugPrint('Email: ${widget.email}');
-    debugPrint('Name: ${_nameController.text}');
-    debugPrint('Job: ${_jobController.text}');
-    debugPrint('Income: ${_incomeController.text}');
+    setState(
+      () => _loading = true,
+    ); // redraw: the button shows "Please wait..."
+
+    // "3,000" -> 3000.0 (remove commas, then convert the text to a number)
+    final income = double.parse(
+      _incomeController.text.replaceAll(',', '').trim(),
+    );
+
+    // await = wait for Firebase to answer.
+    final error = await _auth.signUp(
+      email: widget.email,
+      password: widget.password,
+      name: _nameController.text.trim(),
+      dreamJob: _jobController.text.trim(),
+      dreamIncome: income,
+    );
+
+    // The user may have left the screen while we were waiting.
+    if (!mounted) return;
+    setState(() => _loading = false);
+
+    if (error != null) {
+      // Show the error at the bottom of the screen and stop.
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text(error)));
+      return;
+    }
+
+    // Success: open Home and clear the sign-up screens from the stack.
+    Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(builder: (_) => const HomeScreen()),
+      (route) => false,
+    );
   }
 
   @override
@@ -65,7 +99,8 @@ class _SignUpProfileScreenState extends State<SignUpProfileScreen> {
                       const AuthHeader(
                         title: 'Sign Up',
                         showBack: true, // the yellow "<" arrow
-                        subtitle: "Tell us what you're working towards. This "
+                        subtitle:
+                            "Tell us what you're working towards. This "
                             'becomes your goal — every focus session earns '
                             'you virtual money toward it.',
                       ),
@@ -98,8 +133,10 @@ class _SignUpProfileScreenState extends State<SignUpProfileScreen> {
                       const SizedBox(height: 32),
                       SizedBox(
                         width: double.infinity,
-                        child:
-                            PrimaryButton(label: 'Next', onPressed: _onNext),
+                        child: PrimaryButton(
+                          label: _loading ? 'Please wait...' : 'Next',
+                          onPressed: _onNext,
+                        ),
                       ),
                     ],
                   ),
