@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:focusbank/screens/login_screen.dart';
 import 'package:focusbank/theme/app_colors.dart';
@@ -5,9 +6,9 @@ import 'package:focusbank/utils/validators.dart';
 import 'package:focusbank/widgets/auth_parts.dart';
 import 'package:focusbank/widgets/auth_text_field.dart';
 import 'package:focusbank/widgets/primary_button.dart';
-import 'package:focusbank/screens/home_screen.dart';
 import 'package:focusbank/services/auth_service.dart';
 import 'package:focusbank/screens/main_navigation.dart';
+import 'package:focusbank/state/app_state.dart';
 
 /// Step 2 of the sign up: the user's goal.
 class SignUpProfileScreen extends StatefulWidget {
@@ -72,6 +73,13 @@ class _SignUpProfileScreenState extends State<SignUpProfileScreen> {
           .showSnackBar(SnackBar(content: Text(error)));
       return;
     }
+
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      await AppState.instance.loadUserDataFromFirestore(user.uid);
+    }
+
+    if (!mounted) return;
 
     // Success: open Home and clear the sign-up screens from the stack.
     Navigator.pushAndRemoveUntil(

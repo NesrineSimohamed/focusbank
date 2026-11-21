@@ -1,7 +1,10 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:focusbank/theme/app_colors.dart';
 import 'package:focusbank/widgets/primary_button.dart';
 import 'package:focusbank/screens/login_screen.dart';
+import 'package:focusbank/screens/main_navigation.dart';
+import 'package:focusbank/state/app_state.dart';
 
 /// First screen: presents the app and leads to the login.
 class WelcomeScreen extends StatelessWidget {
@@ -84,18 +87,58 @@ class WelcomeScreen extends StatelessWidget {
 
                   Center(
                     child: PrimaryButton(
-                      label: 'Start Now',
-                      onPressed: () {
-                        // push = put the Login screen on top of the stack.
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => const LoginScreen(),
-                          ),
-                        );
+                      label: FirebaseAuth.instance.currentUser != null
+                          ? 'Continue'
+                          : 'Start Now',
+                      onPressed: () async {
+                        final user = FirebaseAuth.instance.currentUser;
+                        if (user != null) {
+                          await AppState.instance.loadUserDataFromFirestore(user.uid);
+                          if (!context.mounted) return;
+                          Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => const MainNavigationScreen(),
+                            ),
+                          );
+                        } else {
+                          // push = put the Login screen on top of the stack.
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => const LoginScreen(),
+                            ),
+                          );
+                        }
                       },
                     ),
                   ),
+                  if (FirebaseAuth.instance.currentUser != null) ...[
+                    const SizedBox(height: 12),
+                    Center(
+                      child: TextButton(
+                        onPressed: () async {
+                          await FirebaseAuth.instance.signOut();
+                          AppState.instance.logout();
+                          if (!context.mounted) return;
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => const LoginScreen(),
+                            ),
+                          );
+                        },
+                        child: const Text(
+                          'Use another account',
+                          style: TextStyle(
+                            color: AppColors.yellow,
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
                   const SizedBox(height: 40),
                 ],
               ),

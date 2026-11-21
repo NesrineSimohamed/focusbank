@@ -108,7 +108,7 @@ class ProfileScreen extends StatelessWidget {
                       Expanded(
                         child: _StatBox(
                           label: 'Focused',
-                          value: '${(state.totalMinutesFocused / 60).round()}h',
+                          value: _formatFocusedTime(state.totalMinutesFocused),
                         ),
                       ),
                       const SizedBox(width: 10),
@@ -225,6 +225,18 @@ class ProfileScreen extends StatelessWidget {
         );
       },
     );
+  }
+
+  String _formatFocusedTime(int totalMinutes) {
+    if (totalMinutes < 60) {
+      return '${totalMinutes}min';
+    }
+    final hours = totalMinutes ~/ 60;
+    final mins = totalMinutes % 60;
+    if (mins == 0) {
+      return '${hours}h';
+    }
+    return '${hours}h ${mins}min';
   }
 
   Widget _buildSectionHeader(String title) {

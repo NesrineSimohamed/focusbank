@@ -30,7 +30,16 @@ class AuthService {
         'name': name,
         'email': email,
         'dreamJob': dreamJob,
+        'dreamCareer': dreamJob,
         'dreamIncome': dreamIncome,
+        'balance': 0,
+        'sessionCount': 0,
+        'totalMinutesFocused': 0,
+        'streakDays': 1,
+        'dailyFocusMinutes': {},
+        'subjectFocusStats': {},
+        'dailySubjectStats': {},
+        'lastActiveDate': DateTime.now().toIso8601String().substring(0, 10),
         'createdAt': FieldValue.serverTimestamp(), // time from the server
       });
 

@@ -1,7 +1,8 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:focusbank/screens/home_screen.dart';
 import 'package:focusbank/screens/signup_screen.dart';
 import 'package:focusbank/services/auth_service.dart';
+import 'package:focusbank/state/app_state.dart';
 import 'package:focusbank/theme/app_colors.dart';
 import 'package:focusbank/utils/validators.dart';
 import 'package:focusbank/widgets/auth_parts.dart';
@@ -50,6 +51,14 @@ class _LoginScreenState extends State<LoginScreen> {
           .showSnackBar(SnackBar(content: Text(error)));
       return;
     }
+
+    // Success: fetch real user progress, balance, and weekly focus from Firestore
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      await AppState.instance.loadUserDataFromFirestore(user.uid);
+    }
+
+    if (!mounted) return;
 
     // Success: open Home and clear the previous screens from the stack.
     Navigator.pushAndRemoveUntil(

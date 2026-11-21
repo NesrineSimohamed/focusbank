@@ -30,9 +30,9 @@ class UserProfile {
   factory UserProfile.fromJson(Map<String, dynamic> json) => UserProfile(
     name: json['name'] as String? ?? 'User',
     email: json['email'] as String? ?? '',
-    dreamCareer: json['dreamCareer'] as String? ?? 'Senior Eng',
+    dreamCareer: (json['dreamCareer'] as String?) ?? (json['dreamJob'] as String?) ?? 'Student',
     academicGoal: json['academicGoal'] as String? ?? 'Master Focus Habits',
-    dailyGoalMinutes: json['dailyGoalMinutes'] as int? ?? 120,
+    dailyGoalMinutes: (json['dailyGoalMinutes'] as num?)?.toInt() ?? 120,
     preferredTime: json['preferredTime'] as String? ?? 'Evening',
     subjects: (json['subjects'] as List<dynamic>?)?.map((e) => e.toString()).toList() ?? [
       'Mobile App Dev',
